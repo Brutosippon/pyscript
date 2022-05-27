@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- py-scripty -->
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+
+    <title>Pyscript-Fidalgo</title>
+
+    <py-env>
+- numpy
+- pandas
+- altair
+- pandas
+- vega_datasets
+    </py-env>
+
+</head>
+<body>
+    <!-- Bem-vindo pyscript -->  
+    <py-script> print('Fidalgo, Agora é possível!') </py-script>
+    
+
+    <py-script> 
+import pandas as pandas
+import numpy as np
+import math
+
+print(math.sqrt(144))
+x=1
+y=2
+z=x+y
+print(z)
+#print([math.sqrt(x) for x in range(1, 10)])
+#pd.util.testing.makeDataFrame()
+    </py-script>
+    
+    <py-script>print("Conectar com app.py")</py-script>|
+    <py-script src="./app.py"></py-script>|
+     <!--fim do ficheiro app.py -->
+    <h3 style="color: blue;">Testa o teu py-script de forma dinâmica!</h3>
+    <h2 style="color: aqua;">"import pandas as pd >> pd.util.testing.makeDataFrame"()</h2>
+
+    <py-repl id = "repl-test" auto-generate="true">   </py-repl>
+
+    <!--Dashboard pyscript -->
+    <h1>Vega datasets "Movies"</h1>
+    <div id="dashboard"></div>
+
+    <py-script output="dashboard">
+import altair as alt
+from vega_datasets import data
+        
+df = data.movies.url
+<!-- ## pts = alt.selection(type="single", encodings=['x']) ##-->
+brush = alt.selection_interval()
+
+rect = alt.Chart(df).mark_bar().encode(
+    alt.X('IMDB_Rating:Q', bin=True),
+    alt.Y('Rotten_Tomatoes_Rating:Q', bin=True),
+    color=alt.condition(brush,'IMDB_Rating:Q', alt.value('lightgray'))
+).add_selection(brush)
+rect
+
+text = alt.Chart(df).mark_text().encode(
+    y=alt.Y('row_number:O', axis=None),
+).transform_window(
+    row_number='row_number()'
+).transform_filter(
+    brush
+).transform_window(
+    rank='rank(row_number)'
+).transform_filter(
+    alt.datum.rank < 15
+)
+rect | text
+    </py-script>
+    
+
+</body>
+</html>
